@@ -1,0 +1,46 @@
+name: Setup K3s/K3d
+description: Setup a lightweight Kubernetes cluster with K3s/K3d
+author: nolar
+branding:
+  icon: cloud
+  color: yellow
+inputs:
+  version:
+    description: Full or partial version of K3s, or `latest`.
+    required: true
+    default: latest
+  k3d-name:
+    description: Cluster name.
+    required: false
+  k3d-args:
+    description: Additional arguments to k3d cluster create.
+    required: false
+  github-token:
+    description: Optional GitHub token to overcome API rate limiting.
+    required: false
+  skip-readiness:
+    description: Skip waiting for full cluster readiness?
+    required: false
+outputs:
+  k3s-version:
+    description: Actual version of K3s detected and used.
+    value: ${{ steps.main.outputs.k3s-version }}
+  k8s-version:
+    description: Actual version of K8s detected and used.
+    value: ${{ steps.main.outputs.k8s-version }}
+runs:
+  using: composite
+  steps:
+    - id: main
+      shell: bash
+      run: ${{ github.action_path }}/action.sh
+      env:
+        VERSION: ${{ inputs.version }}
+        K3D_NAME: ${{ inputs.k3d-name }}
+        K3D_ARGS: ${{ inputs.k3d-args }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        SKIP_READINESS: ${{ inputs.skip-readiness && 'yes' || '' }}
+
+    # Validate that everything is installed, is on PATH, and generally works.
+    - shell: bash
+      run: kubectl version
