@@ -1,5 +1,5 @@
-name: Setup K3s/K3d
-description: Setup a lightweight Kubernetes cluster with K3s/K3d
+name: Setup K3d/K3s
+description: Setup a lightweight Kubernetes cluster with K3d/K3s
 author: nolar
 branding:
   icon: cloud
