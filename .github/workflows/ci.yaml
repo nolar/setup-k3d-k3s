@@ -1,0 +1,89 @@
+name: CI
+on:
+  push:
+    branches:
+      - master
+      - release/**
+  pull_request:
+    branches:
+      - master
+      - release/**
+  workflow_dispatch: {}
+
+jobs:
+
+  test-latest:
+    name: Install latest
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./  # normally: nolar/setup-k3d-k3s@v1
+      - run: kubectl version
+
+  test-specific:
+    strategy:
+      fail-fast: false
+      matrix:
+        k3s: [v1.17.14+k3s2, v1.17.14, v1.17, v1]
+    name: Install ${{ matrix.k3s }}
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./  # normally: nolar/setup-k3d-k3s@v1
+        with:
+          version: ${{ matrix.k3s }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: kubectl version
+
+  test-outputs:
+    name: Check outputs
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./  # normally: nolar/setup-k3d-k3s@v1
+        with:
+          version: latest
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        id: install
+      - run: echo K3S=${K3S} K8S=${K8S}
+        env:
+          K3S: ${{ steps.install.outputs.k3s-version }}
+          K8S: ${{ steps.install.outputs.k8s-version }}
+
+  test-skip-readiness:
+    name: Skip readiness
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./  # normally: nolar/setup-k3d-k3s@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          skip-readiness: true
+      - run: kubectl version
+
+  test-multi-cluster:
+    name: Multi-cluster
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./  # normally: nolar/setup-k3d-k3s@v1
+        with:
+          version: v1.16
+          k3d-name: 1-16
+      - uses: ./  # normally: nolar/setup-k3d-k3s@v1
+        with:
+          version: v1.18
+          k3d-name: 1-18
+      - run: kubectl version --context k3d-1-16
+      - run: kubectl version --context k3d-1-18
+
+  test-custom-args:
+    name: Custom args
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./  # normally: nolar/setup-k3d-k3s@v1
+        with:
+          version: v1.16
+          k3d-args: --servers 2 --no-lb
+      - run: kubectl get nodes  # there must be two of them
