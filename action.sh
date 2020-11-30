@@ -87,12 +87,6 @@ echo "::set-output name=k8s-version::${K8S}"
 curl --silent --fail https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
 k3d cluster create ${K3D_NAME:-} --wait --image=rancher/k3s:"${K3S//+/-}" ${K3D_ARGS:-}
 
-# Install kubectl (for this action only, not for the whole job).
-curl --silent --fail -L -o kubectl \
-  https://storage.googleapis.com/kubernetes-release/release/"$K8S"/bin/linux/amd64/kubectl
-chmod +x kubectl
-sudo mv kubectl /usr/local/bin/
-
 # Sometimes, the service account is not created immediately. Nice trick, but no:
 # we need to wait until the cluster is fully ready before starting the tests.
 if [[ -z "${SKIP_READINESS}" ]]; then
