@@ -14,7 +14,8 @@ fi
 
 # Fetch all K3s versions usable for the specified partial version.
 # Even if the version is specific and complete, assume it is possibly partial.
-curl --silent --fail "${authz[@]}" "${GITHUB_API_URL}/repos/${REPO}/releases?per_page=999" |
+url="${GITHUB_API_URL}/repos/${REPO}/releases?per_page=999"
+curl --silent --fail --location "${authz[@]}" "$url" | \
   jq '.[] | select(.prerelease==false) | .tag_name' >/tmp/versions.txt
 
 echo "::group::All available K3s versions (unsorted)"
