@@ -17,32 +17,7 @@ fi
 url="${GITHUB_API_URL}/repos/${REPO}/releases?per_page=999"
 releases=$(curl --silent --fail --location "${authz[@]-}" "$url")
 versions=$(jq <<< "$releases" '.[] | select(.prerelease==false) | .tag_name')
-
-echo "::group::All available K3s versions (unsorted)"
-echo "$versions"
-echo "::endgroup::"
-
-# Sort the versions numerically, not lexographically:
-# 0. Preserve the original name of the version.
-# 1. Split the version nmame ("v1.19.4+k3s1") into parts (["1", "19", "4", "1"]).
-# 2. Convert parts to numbers when possible ([1, 19, 4, 1]).
-# 3. Sort numerically instead of lexographically.
-# 4. Restore the original name of each version.
-versions_sorted=$(jq --slurp <<< "$versions" '
-  [ .[]
-    | { original: .,
-        numeric:
-          .
-          | ltrimstr("v")
-          | split("(-|\\.|\\+k3s)"; "")
-          | [ .[] | (tonumber? // .) ]
-      }
-  ]
-  | sort_by(.numeric)
-  | reverse
-  | .[]
-    | .original
-  ')
+versions_sorted=$(sort <<< "$versions" --field-separator=- --key=1,1rV --key=2,2rV)
 
 echo "::group::All available K3s versions (newest on top)"
 echo "$versions_sorted"
