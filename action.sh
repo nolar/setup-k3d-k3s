@@ -14,9 +14,14 @@ fi
 
 # Fetch all K3s versions usable for the specified partial version.
 # Even if the version is specific and complete, assume it is possibly partial.
-url="${GITHUB_API_URL}/repos/${REPO}/releases?per_page=999"
-releases=$(curl --silent --fail --location "${authz[@]-}" "$url")
-versions=$(jq <<< "$releases" '.[] | select(.prerelease==false) | .tag_name')
+# 2-3 pages are enough to reach v0 while not depleting the GitHub API limits.
+versions=""
+for page in 1 2 ; do
+  url="${GITHUB_API_URL}/repos/${REPO}/releases?per_page=999&page=${page}"
+  releases=$(curl --silent --fail --location "${authz[@]-}" "$url")
+  versions+=$(jq <<< "$releases" '.[] | select(.prerelease==false) | .tag_name')
+  versions+=$'\n'
+done
 versions_sorted=$(sort <<< "$versions" --field-separator=- --key=1,1rV --key=2,2rV)
 
 echo "::group::All available K3s versions (newest on top)"
