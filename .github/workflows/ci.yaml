@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        k3s: [v1.17.14+k3s2, v1.17.14, v1.17, v1]
+        k3s: [v1.21.2+k3s1, v1.21.2, v1.21, v1]
     name: Install ${{ matrix.k3s }}
     runs-on: ubuntu-20.04
     steps:
@@ -66,14 +66,14 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./  # normally: nolar/setup-k3d-k3s@v1
         with:
-          version: v1.16
-          k3d-name: 1-16
+          version: v1.20
+          k3d-name: 1-20
       - uses: ./  # normally: nolar/setup-k3d-k3s@v1
         with:
-          version: v1.18
-          k3d-name: 1-18
-      - run: kubectl version --context k3d-1-16
-      - run: kubectl version --context k3d-1-18
+          version: v1.21
+          k3d-name: 1-21
+      - run: kubectl version --context k3d-1-20
+      - run: kubectl version --context k3d-1-21
 
   test-custom-args:
     name: Custom args
@@ -82,6 +82,6 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./  # normally: nolar/setup-k3d-k3s@v1
         with:
-          version: v1.16
+          version: v1.21
           k3d-args: --servers 2 --no-lb
       - run: kubectl get nodes  # there must be two of them
