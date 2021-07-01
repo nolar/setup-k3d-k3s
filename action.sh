@@ -66,6 +66,7 @@ echo "::set-output name=k8s-version::${K8S}"
 # Install K3d and start a K3s cluster. It takes 20 seconds usually.
 # Name & args can be empty or multi-value. For this, they are not quoted.
 curl --silent --fail https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
+k3d --version
 k3d cluster create ${K3D_NAME:-} --wait --image=rancher/k3s:"${K3S//+/-}" ${K3D_ARGS:-}
 
 # Sometimes, the service account is not created immediately. Nice trick, but no:
