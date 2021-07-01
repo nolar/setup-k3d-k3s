@@ -57,7 +57,7 @@ Besides, 1.16 and 1.17 are broken and will not be fixed
 (see [#11](https://github.com/nolar/setup-k3d-k3s/issues/11)).
 
 When the version is partial, the latest detected one will be used,
-as found in [K3s releases](https://github.com/rancher/k3s/releases),
+as found in [K3s releases](https://github.com/k3s-io/k3s/releases),
 according to the basic semantical sorting (i.e. not by time of releasing).
 
 

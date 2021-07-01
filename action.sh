@@ -4,7 +4,7 @@ set -eu
 
 : ${GITHUB_API_URL:=https://api.github.com}
 : ${VERSION:=latest}
-: ${REPO:=rancher/k3s}
+: ${REPO:=k3s-io/k3s}
 
 if [[ -n "${GITHUB_TOKEN:-}" ]]; then
   authz=("-H" "Authorization: Bearer ${GITHUB_TOKEN}")
