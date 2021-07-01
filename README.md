@@ -30,7 +30,7 @@ jobs:
     steps:
       - uses: nolar/setup-k3d-k3s@v1
         with:
-          version: v1.19  # E.g.: v1.19, v1.19.4, v1.19.4+k3s1
+          version: v1.21  # E.g.: v1.21, v1.21.2, v1.21.2+k3s1
           github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
@@ -43,9 +43,9 @@ jobs:
 
 The following notations are supported:
 
-* `v1.19.4+k3s1`
-* `v1.19.4`
-* `v1.19`
+* `v1.21.2+k3s1`
+* `v1.21.2`
+* `v1.21`
 * `v1`
 * `latest`
 
@@ -53,6 +53,8 @@ Defaults to `latest`.
 
 Keep in mind that K3d dates back only to v1.16.
 There are no 1.15 and older versions of K8s.
+Besides, 1.16 and 1.17 are broken and will not be fixed
+(see [#11](https://github.com/nolar/setup-k3d-k3s/issues/11)).
 
 When the version is partial, the latest detected one will be used,
 as found in [K3s releases](https://github.com/rancher/k3s/releases),
@@ -106,12 +108,12 @@ resources to appear (e.g., for a service account named "default").
 
 ### `k3s-version`
 
-The specific K3s version that was detected and used. E.g. `v1.19.4+k3s1`.
+The specific K3s version that was detected and used. E.g. `v1.21.2+k3s1`.
 
 
 ### `k8s-version`
 
-The specific K8s version that was detected and used. E.g. `v1.19.4`.
+The specific K8s version that was detected and used. E.g. `v1.21.2`.
 
 
 ## Examples
@@ -130,7 +132,7 @@ of K8s and the latest possible version of K3s:
 steps:
   - uses: nolar/setup-k3d-k3s@v1
     with:
-      version: v1.19
+      version: v1.21
 ```
 
 With the very specific version of K3s:
@@ -139,7 +141,7 @@ With the very specific version of K3s:
 steps:
   - uses: nolar/setup-k3d-k3s@v1
     with:
-      version: v1.19.4+k3s1
+      version: v1.21.2+k3s1
 ```
 
 The partial versions enable the build matrices with only the essential
@@ -152,7 +154,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        k8s: [ v1.19, v1.18, v1.17, v1.16 ]
+        k8s: [ v1.21, v1.20, v1.19, v1.18 ]
     name: K8s ${{ matrix.k8s }}
     runs-on: ubuntu-20.04
     steps:
@@ -172,14 +174,14 @@ jobs:
     steps:
       - uses: nolar/setup-k3d-k3s@v1
         with:
-          version: v1.16
-          k3d-name: 1-16
+          version: v1.20
+          k3d-name: 1-20
       - uses: nolar/setup-k3d-k3s@v1
         with:
-          version: v1.18
-          k3d-name: 1-18
-      - run: kubectl version --context k3d-1-16 
-      - run: kubectl version --context k3d-1-18 
+          version: v1.21
+          k3d-name: 1-21
+      - run: kubectl version --context k3d-1-20 
+      - run: kubectl version --context k3d-1-21 
 ```
 
 Custom args can be passed to K3d (and through it, to K3s & K8s):
