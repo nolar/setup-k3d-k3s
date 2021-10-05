@@ -9,6 +9,10 @@ inputs:
     description: Full or partial version of K3s, or `latest`.
     required: true
     default: latest
+  k3d-tag:
+    description: K3d tag/version to use (by default, the latest one).
+    required: false
+    default: latest
   k3d-name:
     description: Cluster name.
     required: false
@@ -22,6 +26,9 @@ inputs:
     description: Skip waiting for full cluster readiness?
     required: false
 outputs:
+  k3d-version:
+    description: Actual version of K3d detected and used.
+    value: ${{ steps.main.outputs.k3d-version }}
   k3s-version:
     description: Actual version of K3s detected and used.
     value: ${{ steps.main.outputs.k3s-version }}
@@ -36,6 +43,7 @@ runs:
       run: ${{ github.action_path }}/action.sh
       env:
         VERSION: ${{ inputs.version }}
+        K3D_TAG: ${{ inputs.k3d-tag }}
         K3D_NAME: ${{ inputs.k3d-name }}
         K3D_ARGS: ${{ inputs.k3d-args }}
         GITHUB_TOKEN: ${{ inputs.github-token }}

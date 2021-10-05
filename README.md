@@ -61,6 +61,16 @@ as found in [K3s releases](https://github.com/k3s-io/k3s/releases),
 according to the basic semantical sorting (i.e. not by time of releasing).
 
 
+### `k3d-tag`
+
+A tag/version of K3d to use. Corresponds to GitHub tags at
+https://github.com/rancher/k3d/releases. For example, `v5.0.0`.
+`latest` is also accepted, but converted to an empty string
+for the installation script.
+
+By default (i.e. if no value is provided), the latest version is used.
+
+
 ### `k3d-name`
 
 A name of the cluster to be created.
@@ -106,6 +116,11 @@ resources to appear (e.g., for a service account named "default").
 
 ## Outputs
 
+### `k3d-version`
+
+The specific K3d version that was detected and used. E.g. `v5.0.0`.
+
+
 ### `k3s-version`
 
 The specific K3s version that was detected and used. E.g. `v1.21.2+k3s1`.
@@ -118,7 +133,7 @@ The specific K8s version that was detected and used. E.g. `v1.21.2`.
 
 ## Examples
 
-With the latest version of K3s/K8s:
+With the latest version of K3d/K3s/K8s:
 
 ```yaml
 steps:
@@ -182,6 +197,20 @@ jobs:
           k3d-name: 1-21
       - run: kubectl version --context k3d-1-20 
       - run: kubectl version --context k3d-1-21 
+```
+
+Custom version of K3d can be used, if needed:
+
+```yaml
+jobs:
+  some-job:
+    name: Custom K3d version
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: nolar/setup-k3d-k3s@v1
+        with:
+          k3d-tag: v4.4.8
+      - run: k3d --version
 ```
 
 Custom args can be passed to K3d (and through it, to K3s & K8s):
