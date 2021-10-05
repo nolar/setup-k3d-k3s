@@ -75,6 +75,17 @@ jobs:
       - run: kubectl version --context k3d-1-20
       - run: kubectl version --context k3d-1-21
 
+  test-custom-tag:
+    name: Custom K3d tag
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./  # normally: nolar/setup-k3d-k3s@v1
+        with:
+          version: v1.21
+          k3d-tag: v4.4.8
+      - run: k3d --version
+
   test-custom-args:
     name: Custom args
     runs-on: ubuntu-20.04
