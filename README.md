@@ -116,6 +116,11 @@ resources to appear (e.g., for a service account named "default").
 
 ## Outputs
 
+### `k3d-version`
+
+The specific K3d version that was detected and used. E.g. `v5.0.0`.
+
+
 ### `k3s-version`
 
 The specific K3s version that was detected and used. E.g. `v1.21.2+k3s1`.

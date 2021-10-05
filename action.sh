@@ -58,10 +58,6 @@ fi
 K3S=$(jq --slurp <<< "$versions_matching" --raw-output '.[0]')
 K8S=${K3S%%+*}
 
-# Communicate back to GitHub Actions.
-echo "::set-output name=k3s-version::${K3S}"
-echo "::set-output name=k8s-version::${K8S}"
-
 # Install K3d and start a K3s cluster. It takes 20 seconds usually.
 # Name & args can be empty or multi-value. For this, they are not quoted.
 if [[ "${K3D_TAG:-}" == "latest" ]]; then
@@ -70,6 +66,17 @@ fi
 curl --silent --fail https://raw.githubusercontent.com/rancher/k3d/main/install.sh \
   | TAG=${K3D_TAG:-} bash
 k3d --version
+K3D=$(k3d --version | grep -Po 'k3d version \K(v[\S]+)' || true )
+
+# Communicate back to GitHub Actions.
+echo "Detected k3d-version::${K3D}"
+echo "Detected k3s-version::${K3S}"
+echo "Detected k8s-version::${K8S}"
+echo "::set-output name=k3d-version::${K3D}"
+echo "::set-output name=k3s-version::${K3S}"
+echo "::set-output name=k8s-version::${K8S}"
+
+# Start a cluster. It takes 20 seconds usually.
 k3d cluster create ${K3D_NAME:-} --wait --image=rancher/k3s:"${K3S//+/-}" ${K3D_ARGS:-}
 
 # Sometimes, the service account is not created immediately. Nice trick, but no:

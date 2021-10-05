@@ -26,6 +26,9 @@ inputs:
     description: Skip waiting for full cluster readiness?
     required: false
 outputs:
+  k3d-version:
+    description: Actual version of K3d detected and used.
+    value: ${{ steps.main.outputs.k3d-version }}
   k3s-version:
     description: Actual version of K3s detected and used.
     value: ${{ steps.main.outputs.k3s-version }}
