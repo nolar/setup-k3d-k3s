@@ -105,6 +105,16 @@ with:
 ```
 
 
+### `skip-creation`
+
+Whether to return from the action as soon as possible
+without the cluster creation (the cluster readiness is also skipped).
+This can be useful to only install the tools for manual cluster creation,
+or to parse the available versions and return them as the action's outputs.
+
+By default (`false`), the cluster is created.
+
+
 ### `skip-readiness`
 
 Whether to return from the action as soon as possible,

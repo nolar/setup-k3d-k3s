@@ -77,11 +77,15 @@ echo "k3s-version=${K3S}" >> $GITHUB_OUTPUT
 echo "k8s-version=${K8S}" >> $GITHUB_OUTPUT
 
 # Start a cluster. It takes 20 seconds usually.
-k3d cluster create ${K3D_NAME:-} --wait --image=rancher/k3s:"${K3S//+/-}" ${K3D_ARGS:-}
+if [[ -z "${SKIP_CREATION}" ]]; then
+  k3d cluster create ${K3D_NAME:-} --wait --image=rancher/k3s:"${K3S//+/-}" ${K3D_ARGS:-}
+else
+  echo "Skipping the cluster creation. The cluster can be not fully ready yet."
+fi
 
 # Sometimes, the service account is not created immediately. Nice trick, but no:
 # we need to wait until the cluster is fully ready before starting the tests.
-if [[ -z "${SKIP_READINESS}" ]]; then
+if [[ -z "${SKIP_CREATION}" && -z "${SKIP_READINESS}" ]]; then
   echo "::group::Waiting for cluster readiness"
   while ! kubectl get serviceaccount default >/dev/null; do sleep 1; done
   echo "::endgroup::"
