@@ -12,7 +12,7 @@ jobs:
 
   test-latest:
     name: Install latest
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - uses: ./  # normally: nolar/setup-k3d-k3s@v1
@@ -24,7 +24,7 @@ jobs:
       matrix:
         k3s: [v1.21.2+k3s1, v1.21.2, v1.21, v1]
     name: Install ${{ matrix.k3s }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - uses: ./  # normally: nolar/setup-k3d-k3s@v1
@@ -35,7 +35,7 @@ jobs:
 
   test-outputs:
     name: Check outputs
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - uses: ./  # normally: nolar/setup-k3d-k3s@v1
@@ -50,7 +50,7 @@ jobs:
 
   test-skip-readiness:
     name: Skip readiness
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - uses: ./  # normally: nolar/setup-k3d-k3s@v1
@@ -61,7 +61,7 @@ jobs:
 
   test-multi-cluster:
     name: Multi-cluster
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - uses: ./  # normally: nolar/setup-k3d-k3s@v1
@@ -77,7 +77,7 @@ jobs:
 
   test-custom-tag:
     name: Custom K3d tag
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - uses: ./  # normally: nolar/setup-k3d-k3s@v1
@@ -88,7 +88,7 @@ jobs:
 
   test-custom-args:
     name: Custom args
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - uses: ./  # normally: nolar/setup-k3d-k3s@v1
