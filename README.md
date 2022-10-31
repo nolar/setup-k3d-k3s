@@ -171,7 +171,7 @@ jobs:
       matrix:
         k8s: [ v1.21, v1.20, v1.19, v1.18 ]
     name: K8s ${{ matrix.k8s }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: nolar/setup-k3d-k3s@v1
         with:
@@ -185,7 +185,7 @@ Multiple clusters in one job are possible, as long as there is enough memory
 jobs:
   some-job:
     name: Multi-cluster
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: nolar/setup-k3d-k3s@v1
         with:
@@ -205,7 +205,7 @@ Custom version of K3d can be used, if needed:
 jobs:
   some-job:
     name: Custom K3d version
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: nolar/setup-k3d-k3s@v1
         with:
@@ -219,7 +219,7 @@ Custom args can be passed to K3d (and through it, to K3s & K8s):
 jobs:
   some-job:
     name: Custom args
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: nolar/setup-k3d-k3s@v1
         with:
