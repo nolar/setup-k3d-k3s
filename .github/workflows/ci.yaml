@@ -14,7 +14,7 @@ jobs:
     name: Install latest
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ./  # normally: nolar/setup-k3d-k3s@v1
       - run: kubectl version
 
@@ -26,7 +26,7 @@ jobs:
     name: Install ${{ matrix.k3s }}
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ./  # normally: nolar/setup-k3d-k3s@v1
         with:
           version: ${{ matrix.k3s }}
@@ -37,7 +37,7 @@ jobs:
     name: Check outputs
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ./  # normally: nolar/setup-k3d-k3s@v1
         with:
           version: latest
@@ -52,7 +52,7 @@ jobs:
     name: Skip readiness
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ./  # normally: nolar/setup-k3d-k3s@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -63,7 +63,7 @@ jobs:
     name: Multi-cluster
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ./  # normally: nolar/setup-k3d-k3s@v1
         with:
           version: v1.20
@@ -79,7 +79,7 @@ jobs:
     name: Custom K3d tag
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ./  # normally: nolar/setup-k3d-k3s@v1
         with:
           version: v1.21
@@ -90,7 +90,7 @@ jobs:
     name: Custom args
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ./  # normally: nolar/setup-k3d-k3s@v1
         with:
           version: v1.21
