@@ -72,9 +72,9 @@ K3D=$(k3d --version | grep -Po 'k3d version \K(v[\S]+)' || true )
 echo "Detected k3d-version::${K3D}"
 echo "Detected k3s-version::${K3S}"
 echo "Detected k8s-version::${K8S}"
-echo "::set-output name=k3d-version::${K3D}"
-echo "::set-output name=k3s-version::${K3S}"
-echo "::set-output name=k8s-version::${K8S}"
+echo "k3d-version=${K3D}" >> $GITHUB_OUTPUT
+echo "k3s-version=${K3S}" >> $GITHUB_OUTPUT
+echo "k8s-version=${K8S}" >> $GITHUB_OUTPUT
 
 # Start a cluster. It takes 20 seconds usually.
 k3d cluster create ${K3D_NAME:-} --wait --image=rancher/k3s:"${K3S//+/-}" ${K3D_ARGS:-}
