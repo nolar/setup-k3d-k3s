@@ -48,6 +48,16 @@ jobs:
           K3S: ${{ steps.install.outputs.k3s-version }}
           K8S: ${{ steps.install.outputs.k8s-version }}
 
+  test-skip-creation:
+    name: Skip creation
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./  # normally: nolar/setup-k3d-k3s@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          skip-creation: true
+
   test-skip-readiness:
     name: Skip readiness
     runs-on: ubuntu-22.04

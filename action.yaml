@@ -22,6 +22,9 @@ inputs:
   github-token:
     description: Optional GitHub token to overcome API rate limiting.
     required: false
+  skip-creation:
+    description: Skip creating the cluster and waiting for its readiness?
+    required: false
   skip-readiness:
     description: Skip waiting for full cluster readiness?
     required: false
@@ -47,8 +50,10 @@ runs:
         K3D_NAME: ${{ inputs.k3d-name }}
         K3D_ARGS: ${{ inputs.k3d-args }}
         GITHUB_TOKEN: ${{ inputs.github-token }}
+        SKIP_CREATION: ${{ inputs.skip-creation && 'yes' || '' }}
         SKIP_READINESS: ${{ inputs.skip-readiness && 'yes' || '' }}
 
     # Validate that everything is installed, is on PATH, and generally works.
     - shell: bash
       run: kubectl version
+      if: ${{ !inputs.skip-creation }}
