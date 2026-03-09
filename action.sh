@@ -17,7 +17,7 @@ fi
 versions=""
 for page in 1 2 ; do
   url="${GITHUB_API_URL}/repos/${REPO}/releases?per_page=999&page=${page}"
-  releases=$(curl --silent --fail --location "${authz[@]-}" "$url")
+  releases=$(curl --silent --fail --location "${authz[@]}" "$url")
   versions+=$(jq <<< "$releases" '.[] | select(.prerelease==false) | .tag_name')
   versions+=$'\n'
 done
@@ -76,16 +76,26 @@ echo "k3d-version=${K3D}" >> $GITHUB_OUTPUT
 echo "k3s-version=${K3S}" >> $GITHUB_OUTPUT
 echo "k8s-version=${K8S}" >> $GITHUB_OUTPUT
 
+# Convert direct k3d args to an array.for proper quoting.
+ARGS=( ${K3D_ARGS:-} )
+
+# Convert k3s args to k3d args to be passed down to k3s properly.
+if [[ -n "${K3S_ARGS:-}" ]]; then
+  for arg in ${K3S_ARGS}; do
+    ARGS+=( --k3s-arg "$arg" )
+  done
+fi
+
 # Start a cluster. It takes 20 seconds usually.
-if [[ -z "${SKIP_CREATION}" ]]; then
-  k3d cluster create ${K3D_NAME:-} --wait --image=rancher/k3s:"${K3S//+/-}" ${K3D_ARGS:-}
+if [[ -z "${SKIP_CREATION:-}" ]]; then
+  k3d cluster create ${K3D_NAME:-} --wait --image=rancher/k3s:"${K3S//+/-}" "${ARGS[@]}"
 else
   echo "Skipping the cluster creation. The cluster can be not fully ready yet."
 fi
 
 # Sometimes, the service account is not created immediately. Nice trick, but no:
 # we need to wait until the cluster is fully ready before starting the tests.
-if [[ -z "${SKIP_CREATION}" && -z "${SKIP_READINESS}" ]]; then
+if [[ -z "${SKIP_CREATION:-}" && -z "${SKIP_READINESS:-}" ]]; then
   echo "::group::Waiting for cluster readiness"
   while ! kubectl get serviceaccount default >/dev/null; do sleep 1; done
   echo "::endgroup::"

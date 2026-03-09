@@ -105,4 +105,7 @@ jobs:
         with:
           version: v1.35
           k3d-args: --servers 2 --no-lb
+          k3s-args: --disable=metrics-server@server:*
       - run: kubectl get nodes  # there must be two of them
+      - run: sleep 30  # metrics.k8s.io requires ≈20s to launch, otherwise absent
+      - run: "! kubectl api-resources | grep metrics.k8s.io"  # there must be none

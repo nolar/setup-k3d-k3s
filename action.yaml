@@ -19,6 +19,9 @@ inputs:
   k3d-args:
     description: Additional arguments to k3d cluster create.
     required: false
+  k3s-args:
+    description: Additional arguments to k3s servers (passed via k3d).
+    required: false
   github-token:
     description: Optional GitHub token to overcome API rate limiting.
     required: false
@@ -49,6 +52,7 @@ runs:
         K3D_TAG: ${{ inputs.k3d-tag }}
         K3D_NAME: ${{ inputs.k3d-name }}
         K3D_ARGS: ${{ inputs.k3d-args }}
+        K3S_ARGS: ${{ inputs.k3s-args }}
         GITHUB_TOKEN: ${{ inputs.github-token }}
         SKIP_CREATION: ${{ inputs.skip-creation && 'yes' || '' }}
         SKIP_READINESS: ${{ inputs.skip-readiness && 'yes' || '' }}

@@ -88,6 +88,12 @@ Additional args to pass to K3d.
 See `k3d cluster create --help` for available flags.
 
 
+### `k3s-args`
+
+Additional args to pass to K3s (passed via K3d's `--k3s-arg`).
+See [k3s docs](https://docs.k3s.io/cli/server) for available flags.
+
+
 ### `github-token`
 
 A token for GitHub API, which is used to avoid rate limiting.
@@ -234,6 +240,7 @@ jobs:
       - uses: nolar/setup-k3d-k3s@v1
         with:
           k3d-args: --servers 2 --no-lb
+          k3s-args: --disable=metrics-server@server:*
       - run: kubectl get nodes  # there must be two of them
 ```
 
