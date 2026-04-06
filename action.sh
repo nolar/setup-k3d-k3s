@@ -97,7 +97,7 @@ fi
 # we need to wait until the cluster is fully ready before starting the tests.
 if [[ -z "${SKIP_CREATION:-}" && -z "${SKIP_READINESS:-}" ]]; then
   echo "::group::Waiting for cluster readiness"
-  while ! kubectl get serviceaccount default >/dev/null; do sleep 1; done
+  while ! kubectl get serviceaccount -n default default >/dev/null; do sleep 1; done
   echo "::endgroup::"
 else
   echo "Skipping the readiness wait. The cluster can be not fully ready yet."
