@@ -26,52 +26,52 @@ else
   authz=()
 fi
 
-# Fetch all K3s versions usable for the specified partial version.
-# Even if the version is specific and complete, assume it is possibly partial.
-# 2-3 pages are enough to reach v0 while not depleting the GitHub API limits.
-versions=""
-for page in 1 2 ; do
-  url="${GITHUB_API_URL}/repos/${REPO}/releases?per_page=100&page=${page}"
-  releases=$(curlex "${authz[@]}" "$url")
-  versions+=$(jq <<< "$releases" '.[] | select(.prerelease==false) | .tag_name')
-  versions+=$'\n'
-done
-versions_sorted=$(sort <<< "$versions" --field-separator=- --key=1,1rV --key=2,2rV)
+  # Fetch all K3s versions usable for the specified partial version.
+  # Even if the version is specific and complete, assume it is possibly partial.
+  # 2-3 pages are enough to reach v0 while not depleting the GitHub API limits.
+  versions=""
+  for page in 1 2 ; do
+    url="${GITHUB_API_URL}/repos/${REPO}/releases?per_page=100&page=${page}"
+    releases=$(curlex "${authz[@]}" "$url")
+    versions+=$(jq <<< "$releases" '.[] | select(.prerelease==false) | .tag_name')
+    versions+=$'\n'
+  done
+  versions_sorted=$(sort <<< "$versions" --field-separator=- --key=1,1rV --key=2,2rV)
 
-echo "::group::All available K3s versions (newest on top)"
-echo "$versions_sorted"
-echo "::endgroup::"
+  echo "::group::All available K3s versions (newest on top)"
+  echo "$versions_sorted"
+  echo "::endgroup::"
 
-# The "latest" version is not directly exposed, but we hard-code its meaning.
-if [[ "${VERSION}" == "latest" ]]; then
-  VERSION=$(jq --slurp <<< "$versions_sorted" --raw-output '.[0]')
-fi
+  # The "latest" version is not directly exposed, but we hard-code its meaning.
+  if [[ "${VERSION}" == "latest" ]]; then
+    VERSION=$(jq --slurp <<< "$versions_sorted" --raw-output '.[0]')
+  fi
 
-# The select only those versions that match the requested one.
-# Do not rely on the parsed forms of the versions -- they may miss some parts.
-# Rely only on the actual name of the version.
-# TODO: LATER: Handle release candidates: v1.18.2-rc3+k3s1 must be before v1.18.2+k3s1.
-versions_matching=$(jq --slurp <<< "$versions_sorted" --arg version "${VERSION}" '
-  .[]
-  | select((.|startswith($version + ".")) or
-           (.|startswith($version + "-")) or
-           (.|startswith($version + "+")) or
-           (.==$version))
-  ')
+  # The select only those versions that match the requested one.
+  # Do not rely on the parsed forms of the versions -- they may miss some parts.
+  # Rely only on the actual name of the version.
+  # TODO: LATER: Handle release candidates: v1.18.2-rc3+k3s1 must be before v1.18.2+k3s1.
+  versions_matching=$(jq --slurp <<< "$versions_sorted" --arg version "${VERSION}" '
+    .[]
+    | select((.|startswith($version + ".")) or
+             (.|startswith($version + "-")) or
+             (.|startswith($version + "+")) or
+             (.==$version))
+    ')
 
-echo "::group::All matching K3s versions (newest on top)"
-echo "$versions_matching"
-echo "::endgroup::"
+  echo "::group::All matching K3s versions (newest on top)"
+  echo "$versions_matching"
+  echo "::endgroup::"
 
-# Get the best possible (i.e. the latest) version of K3s/K8s.
-# If no matching versions were found, assume the provided version is full and correct.
-if [[ -z "$versions_matching" ]]; then
-  echo "::notice::No matching K3s versions were found in the recent releases; using the version string as is: ${VERSION}"
-  K3S="${VERSION}"
-else
-  K3S=$(jq --slurp <<< "$versions_matching" --raw-output '.[0]')
-fi
-K8S=${K3S%%+*}
+  # Get the best possible (i.e. the latest) version of K3s/K8s.
+  # If no matching versions were found, assume the provided version is full and correct.
+  if [[ -z "$versions_matching" ]]; then
+    echo "::notice::No matching K3s versions were found in the recent releases; using the version string as is: ${VERSION}"
+    K3S="${VERSION}"
+  else
+    K3S=$(jq --slurp <<< "$versions_matching" --raw-output '.[0]')
+  fi
+  K8S=${K3S%%+*}
 
 # Install K3d and start a K3s cluster. It takes 20 seconds usually.
 # Name & args can be empty or multi-value. For this, they are not quoted.
