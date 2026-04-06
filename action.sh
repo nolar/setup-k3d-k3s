@@ -26,6 +26,14 @@ else
   authz=()
 fi
 
+# K3s channels (e.g. stable, v1.35) are passed directly to k3d as the image.
+# See https://update.k3s.io/v1-release/channels for the list of channels.
+if [[ -n "${CHANNEL:-}" ]]; then
+  K3S=""
+  K8S=""
+  IMAGE="+${CHANNEL}"
+else
+
   # Fetch all K3s versions usable for the specified partial version.
   # Even if the version is specific and complete, assume it is possibly partial.
   # 2-3 pages are enough to reach v0 while not depleting the GitHub API limits.
@@ -72,6 +80,9 @@ fi
     K3S=$(jq --slurp <<< "$versions_matching" --raw-output '.[0]')
   fi
   K8S=${K3S%%+*}
+  IMAGE="rancher/k3s:${K3S//+/-}"
+
+fi
 
 # Install K3d and start a K3s cluster. It takes 20 seconds usually.
 # Name & args can be empty or multi-value. For this, they are not quoted.
@@ -103,7 +114,7 @@ fi
 
 # Start a cluster. It takes 20 seconds usually.
 if [[ -z "${SKIP_CREATION:-}" ]]; then
-  k3d cluster create ${K3D_NAME:-} --wait --image=rancher/k3s:"${K3S//+/-}" "${ARGS[@]}"
+  k3d cluster create ${K3D_NAME:-} --wait --image="${IMAGE}" "${ARGS[@]}"
 else
   echo "Skipping the cluster creation. The cluster can be not fully ready yet."
 fi

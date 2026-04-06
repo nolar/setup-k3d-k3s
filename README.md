@@ -30,7 +30,7 @@ jobs:
     steps:
       - uses: nolar/setup-k3d-k3s@v1
         with:
-          version: v1.35  # E.g.: v1.35, v1.35.3, v1.35.3+k3s1, v1.35+stable
+          version: v1.35  # E.g.: v1.35, v1.35.3, v1.35.3+k3s1
           github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
@@ -51,6 +51,8 @@ The following notations are supported:
 
 Defaults to `latest`.
 
+Mutually exclusive with `channel`.
+
 Keep in mind that K3d dates back only to v1.16.
 There are no 1.15 and older versions of K8s.
 Besides, 1.16 and 1.17 are broken and will not be fixed
@@ -60,7 +62,27 @@ When the version is partial, the latest detected one will be used,
 as found in [K3s releases](https://github.com/k3s-io/k3s/releases),
 according to the basic semantical sorting (i.e. not by time of releasing).
 
-If the version is not found in the recent releases (e.g. a very old version), it is used as is, assuming it is a valid K3s image tag.
+If the version is not found in the recent releases (e.g. a very old version),
+it is used as is, assuming it is a valid K3s image tag.
+
+
+### `channel`
+
+A [K3s release channel](https://update.k3s.io/v1-release/channels) name,
+e.g. `stable`, `latest`, `testing`, or `v1.35`.
+Passed directly to K3d, which resolves it to a specific version.
+No GitHub API calls are made when a channel is used.
+
+Mutually exclusive with `version`.
+
+Note: `version: latest` and `channel: latest` are functionally equivalent
+and usually resolve to the same version, but they work differently.
+`version: latest` is resolved by this action via the GitHub API;
+`channel: latest` is resolved by K3d itself.
+
+When a channel is used, the version lookup is not performed, so the
+`k3s-version` and `k8s-version` outputs are empty.
+This may change in the future.
 
 
 ### `k3d-tag`
@@ -215,6 +237,15 @@ jobs:
           k3d-name: 1-35
       - run: kubectl version --context k3d-1-34 
       - run: kubectl version --context k3d-1-35 
+```
+
+With a K3s release channel (K3d resolves it to a specific version):
+
+```yaml
+steps:
+  - uses: nolar/setup-k3d-k3s@v1
+    with:
+      channel: stable
 ```
 
 Custom version of K3d can be used, if needed:
