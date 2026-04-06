@@ -60,6 +60,8 @@ When the version is partial, the latest detected one will be used,
 as found in [K3s releases](https://github.com/k3s-io/k3s/releases),
 according to the basic semantical sorting (i.e. not by time of releasing).
 
+If the version is not found in the recent releases (e.g. a very old version), it is used as is, assuming it is a valid K3s image tag.
+
 
 ### `k3d-tag`
 

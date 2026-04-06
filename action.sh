@@ -63,14 +63,14 @@ echo "::group::All matching K3s versions (newest on top)"
 echo "$versions_matching"
 echo "::endgroup::"
 
-# Validate that we could identify the version (even a very specific one).
-if [[ -z "$versions_matching" ]]; then
-  echo "::error::No matching K3s versions were found."
-  exit 1
-fi
-
 # Get the best possible (i.e. the latest) version of K3s/K8s.
-K3S=$(jq --slurp <<< "$versions_matching" --raw-output '.[0]')
+# If no matching versions were found, assume the provided version is full and correct.
+if [[ -z "$versions_matching" ]]; then
+  echo "::notice::No matching K3s versions were found in the recent releases; using the version string as is: ${VERSION}"
+  K3S="${VERSION}"
+else
+  K3S=$(jq --slurp <<< "$versions_matching" --raw-output '.[0]')
+fi
 K8S=${K3S%%+*}
 
 # Install K3d and start a K3s cluster. It takes 20 seconds usually.
