@@ -5,6 +5,21 @@ set -eu
 : ${VERSION:=latest}
 : ${REPO:=k3s-io/k3s}
 
+# Try calling curl on errors a few times before giving up.
+curlex() {
+  local attempt rc
+  for attempt in 1 2 3; do
+    rc=0
+    curl --silent --show-error --fail --location "$@" || rc=$?
+    if [[ $rc -eq 0 ]]; then
+      return 0
+    fi
+    echo "curl attempt ${attempt} failed (exit code ${rc}), retrying..." >&2
+  done
+  echo "curl failed after 3 attempts" >&2
+  return $rc
+}
+
 if [[ -n "${GITHUB_TOKEN:-}" ]]; then
   authz=("-H" "Authorization: Bearer ${GITHUB_TOKEN}")
 else
@@ -17,7 +32,7 @@ fi
 versions=""
 for page in 1 2 ; do
   url="${GITHUB_API_URL}/repos/${REPO}/releases?per_page=999&page=${page}"
-  releases=$(curl --silent --show-error --fail --location "${authz[@]}" "$url")
+  releases=$(curlex "${authz[@]}" "$url")
   versions+=$(jq <<< "$releases" '.[] | select(.prerelease==false) | .tag_name')
   versions+=$'\n'
 done
@@ -63,7 +78,7 @@ K8S=${K3S%%+*}
 if [[ "${K3D_TAG:-}" == "latest" ]]; then
   K3D_TAG=""
 fi
-curl --silent --show-error --fail --location "${authz[@]}" https://raw.githubusercontent.com/rancher/k3d/main/install.sh \
+curlex "${authz[@]}" https://raw.githubusercontent.com/rancher/k3d/main/install.sh \
   | TAG=${K3D_TAG:-} bash
 k3d --version
 K3D=$(k3d --version | grep -Po 'k3d version \K(v[\S]+)' || true )
