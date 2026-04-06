@@ -65,6 +65,30 @@ jobs:
           REQUESTED: ${{ matrix.k3s }}
           K3S_VERSION: ${{ steps.install.outputs.k3s-version }}
 
+  test-specific-outdated:
+    name: Install outdated
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./  # normally: nolar/setup-k3d-k3s@v1
+        with:
+          version: v1.30.2+k3s2  # pick something out of visible history
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        id: install
+      - name: Assert cluster accessibility
+        run: kubectl version
+      - name: Assert server version matches requested
+        run: |
+          ACTUAL=$(kubectl version -o json | jq -r '.serverVersion.gitVersion')
+          echo "Actual: $ACTUAL"
+          [[ "$ACTUAL" == "v1.30.2+k3s2" ]]
+      - name: Assert output version matches requested
+        run: |
+          echo "Output k3s-version: $K3S_VERSION"
+          [[ "$K3S_VERSION" == "v1.30.2+k3s2" ]]
+        env:
+          K3S_VERSION: ${{ steps.install.outputs.k3s-version }}
+
   test-outputs:
     name: Check outputs
     runs-on: ubuntu-24.04

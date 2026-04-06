@@ -6,7 +6,7 @@ branding:
   color: yellow
 inputs:
   version:
-    description: Full or partial version of K3s, or `latest`.
+    description: Full or partial version of K3s, or `latest`. If the version is not found in the recent releases, it is used as is.
     required: true
     default: latest
   k3d-tag:

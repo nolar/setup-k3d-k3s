@@ -30,7 +30,7 @@ jobs:
     steps:
       - uses: nolar/setup-k3d-k3s@v1
         with:
-          version: v1.21  # E.g.: v1.21, v1.21.2, v1.21.2+k3s1
+          version: v1.35  # E.g.: v1.35, v1.35.3, v1.35.3+k3s1, v1.35+stable
           github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
@@ -43,9 +43,9 @@ jobs:
 
 The following notations are supported:
 
-* `v1.21.2+k3s1`
-* `v1.21.2`
-* `v1.21`
+* `v1.35.3+k3s1`
+* `v1.35.3`
+* `v1.35`
 * `v1`
 * `latest`
 
@@ -59,6 +59,8 @@ Besides, 1.16 and 1.17 are broken and will not be fixed
 When the version is partial, the latest detected one will be used,
 as found in [K3s releases](https://github.com/k3s-io/k3s/releases),
 according to the basic semantical sorting (i.e. not by time of releasing).
+
+If the version is not found in the recent releases (e.g. a very old version), it is used as is, assuming it is a valid K3s image tag.
 
 
 ### `k3d-tag`
@@ -139,12 +141,12 @@ The specific K3d version that was detected and used. E.g. `v5.0.0`.
 
 ### `k3s-version`
 
-The specific K3s version that was detected and used. E.g. `v1.21.2+k3s1`.
+The specific K3s version that was detected and used. E.g. `v1.35.3+k3s1`.
 
 
 ### `k8s-version`
 
-The specific K8s version that was detected and used. E.g. `v1.21.2`.
+The specific K8s version that was detected and used. E.g. `v1.35.3`.
 
 
 ## Examples
@@ -163,7 +165,7 @@ of K8s and the latest possible version of K3s:
 steps:
   - uses: nolar/setup-k3d-k3s@v1
     with:
-      version: v1.21
+      version: v1.35
 ```
 
 With the very specific version of K3s:
@@ -172,7 +174,7 @@ With the very specific version of K3s:
 steps:
   - uses: nolar/setup-k3d-k3s@v1
     with:
-      version: v1.21.2+k3s1
+      version: v1.35.3+k3s1
 ```
 
 The partial versions enable the build matrices with only the essential
@@ -185,9 +187,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        k8s: [ v1.21, v1.20, v1.19, v1.18 ]
+        k8s: [ v1.35, v1.34, v1.33, v1.32 ]
     name: K8s ${{ matrix.k8s }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: nolar/setup-k3d-k3s@v1
         with:
@@ -201,18 +203,18 @@ Multiple clusters in one job are possible, as long as there is enough memory
 jobs:
   some-job:
     name: Multi-cluster
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: nolar/setup-k3d-k3s@v1
         with:
-          version: v1.20
-          k3d-name: 1-20
+          version: v1.34
+          k3d-name: 1-34
       - uses: nolar/setup-k3d-k3s@v1
         with:
-          version: v1.21
-          k3d-name: 1-21
-      - run: kubectl version --context k3d-1-20 
-      - run: kubectl version --context k3d-1-21 
+          version: v1.35
+          k3d-name: 1-35
+      - run: kubectl version --context k3d-1-34 
+      - run: kubectl version --context k3d-1-35 
 ```
 
 Custom version of K3d can be used, if needed:
@@ -221,7 +223,7 @@ Custom version of K3d can be used, if needed:
 jobs:
   some-job:
     name: Custom K3d version
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: nolar/setup-k3d-k3s@v1
         with:
@@ -235,7 +237,7 @@ Custom args can be passed to K3d (and through it, to K3s & K8s):
 jobs:
   some-job:
     name: Custom args
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: nolar/setup-k3d-k3s@v1
         with:
