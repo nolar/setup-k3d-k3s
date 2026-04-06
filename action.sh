@@ -17,7 +17,7 @@ fi
 versions=""
 for page in 1 2 ; do
   url="${GITHUB_API_URL}/repos/${REPO}/releases?per_page=999&page=${page}"
-  releases=$(curl --silent --fail --location "${authz[@]}" "$url")
+  releases=$(curl --silent --show-error --fail --location "${authz[@]}" "$url")
   versions+=$(jq <<< "$releases" '.[] | select(.prerelease==false) | .tag_name')
   versions+=$'\n'
 done
@@ -63,7 +63,7 @@ K8S=${K3S%%+*}
 if [[ "${K3D_TAG:-}" == "latest" ]]; then
   K3D_TAG=""
 fi
-curl --silent --fail https://raw.githubusercontent.com/rancher/k3d/main/install.sh \
+curl --silent --show-error --fail --location "${authz[@]}" https://raw.githubusercontent.com/rancher/k3d/main/install.sh \
   | TAG=${K3D_TAG:-} bash
 k3d --version
 K3D=$(k3d --version | grep -Po 'k3d version \K(v[\S]+)' || true )
