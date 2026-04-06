@@ -31,7 +31,7 @@ fi
 # 2-3 pages are enough to reach v0 while not depleting the GitHub API limits.
 versions=""
 for page in 1 2 ; do
-  url="${GITHUB_API_URL}/repos/${REPO}/releases?per_page=999&page=${page}"
+  url="${GITHUB_API_URL}/repos/${REPO}/releases?per_page=100&page=${page}"
   releases=$(curlex "${authz[@]}" "$url")
   versions+=$(jq <<< "$releases" '.[] | select(.prerelease==false) | .tag_name')
   versions+=$'\n'
