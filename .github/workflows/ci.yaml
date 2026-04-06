@@ -11,7 +11,7 @@ on:
 jobs:
 
   test-latest:
-    name: Install latest
+    name: Version latest
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
@@ -37,7 +37,7 @@ jobs:
       fail-fast: false
       matrix:
         k3s: [v1.35.2+k3s1, v1.35.2, v1.35, v1]
-    name: Install ${{ matrix.k3s }}
+    name: Version ${{ matrix.k3s }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
@@ -66,7 +66,7 @@ jobs:
           K3S_VERSION: ${{ steps.install.outputs.k3s-version }}
 
   test-specific-outdated:
-    name: Install outdated
+    name: Version outdated
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
@@ -88,6 +88,40 @@ jobs:
           [[ "$K3S_VERSION" == "v1.30.2+k3s2" ]]
         env:
           K3S_VERSION: ${{ steps.install.outputs.k3s-version }}
+
+  test-channel-stable:
+    name: Channel stable
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./  # normally: nolar/setup-k3d-k3s@v1
+        with:
+          channel: stable  # usually latest-1
+        id: install
+      - name: Assert cluster accessibility
+        run: kubectl version
+      - name: Assert server version is well-formed
+        run: |
+          ACTUAL=$(kubectl version -o json | jq -r '.serverVersion.gitVersion')
+          echo "Actual: $ACTUAL"
+          [[ "$ACTUAL" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]
+
+  test-channel-versioned:
+    name: Channel v1.33
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./  # normally: nolar/setup-k3d-k3s@v1
+        with:
+          channel: v1.33
+        id: install
+      - name: Assert cluster accessibility
+        run: kubectl version
+      - name: Assert server version matches requested channel
+        run: |
+          ACTUAL=$(kubectl version -o json | jq -r '.serverVersion.gitVersion')
+          echo "Actual: $ACTUAL"
+          [[ "$ACTUAL" == v1.33.* ]]
 
   test-outputs:
     name: Check outputs
